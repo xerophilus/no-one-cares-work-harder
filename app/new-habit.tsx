@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import styles from '@/constants/Styles';
-import TextComponent from '@/components/TextComponent';
+import TextComponent from '../components/TextComponent';
 import { useRouter } from 'expo-router';
 
 const NewHabitScreen = () => {
