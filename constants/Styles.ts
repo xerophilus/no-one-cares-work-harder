@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginVertical: 20,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
   },
@@ -36,6 +36,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 20,
+  },
+  notificationItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#555',
+    paddingVertical: 10,
+    width: '100%',
   },
   card: {
     width: '90%',

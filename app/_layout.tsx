@@ -11,6 +11,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthContextProvider, useAuth } from '@/context/authContext';
+import { DatabaseProvider } from '@/context/databaseContex';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -87,7 +88,7 @@ const MainLayout = () => {
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
+      // console.log(response);
     });
 
     return () => {
@@ -175,9 +176,11 @@ export default function RootLayout() {
 
   return (
     <AuthContextProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <MainLayout />
-      </ThemeProvider>
+      <DatabaseProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <MainLayout />
+        </ThemeProvider>
+      </DatabaseProvider>
     </AuthContextProvider>
   );
 }

@@ -1,87 +1,121 @@
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { collection, doc, getDoc, setDoc, getDocs, addDoc } from 'firebase/firestore';
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
+import { Alert } from 'react-native';
 import { auth, db } from './firebaseConfig';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { Alert } from "react-native";
 
 export const AuthContext = createContext();
 
-export const AuthContextProvider = ({children}) => {
-    const [user, setUser] = useState(null);
-    const [isAuthed, setIsAuthed] = useState(undefined);
+export const AuthContextProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [isAuthed, setIsAuthed] = useState(undefined);
+  const [habits, setHabits] = useState([]);
 
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setIsAuthed(true);
-                setUser(user);
-            } else {
-                setIsAuthed(false);
-                setUser(null);
-            }
-        });
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthed(true);
+        fetchUser(user.uid);
+      } else {
+        setIsAuthed(false);
+        setUser(null);
+      }
+    });
 
-        return () => unsub(); // Ensure the unsubscribe function is returned
-    }, []);
+    return () => unsub();
+  }, []);
 
-    const login = async (email, password) => {
-        try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
-            return { success: true, data: response?.user };
-        } catch (e) {
-            console.log(e);
-            return { success: false, msg: e.message };
-        }
-    };
+  const login = async (email, password) => {
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      return { success: true, data: response?.user };
+    } catch (e) {
+      console.log(e);
+      return { success: false, msg: e.message };
+    }
+  };
 
-    const logout = async () => {
-        try {
-            await signOut(auth);
-        } catch (e) {
-            console.log(e);
-        }
-    };
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-    const register = async (email, password, name) => {
-        try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-            await setDoc(doc(db, "users", response?.user?.uid), {
-                name,
-                userId: response?.user?.uid
-            });
-            return { success: true, data: response?.user };
-        } catch (e) {
-            let msg = e.message;
-            if (msg.includes('invalid-email')) msg = 'Invalid Email';
-            if (msg.includes('email-already-in-use')) msg = 'This email is already in use';
-            return { success: false, msg };
-        }
-    };
+  const register = async (email, password, name) => {
+    try {
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "users", response?.user?.uid), {
+        name,
+        userId: response?.user?.uid
+      });
+      fetchUser(response?.user?.uid);
+      return { success: true, data: response?.user };
+    } catch (e) {
+      let msg = e.message;
+      if (msg.includes('invalid-email')) msg = 'Invalid Email';
+      if (msg.includes('email-already-in-use')) msg = 'This email is already in use';
+      return { success: false, msg };
+    }
+  };
 
-    const forgotPassword = async (email) => {
-        try {
-            sendPasswordResetEmail(auth, email)
-            .then(() => {
-                Alert.alert("Password Reset", "If an account with that email exists an email will arive in your inbox shortly")
-            })
-        } catch (e) {
-            console.log(e);
-        }
-    };
+  const forgotPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert("Password Reset", "If an account with that email exists, you will receive an email shortly.");
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, isAuthed, login, register, logout, forgotPassword }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const fetchUser = async (uid) => {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', uid));
+      if (userDoc.exists()) {
+        setUser(userDoc.data());
+        fetchHabits();
+      } else {
+        console.log('No such document!');
+      }
+    } catch (e) {
+      console.error('Error fetching user: ', e);
+    }
+  };
+
+  const fetchHabits = async () => {
+    try {
+      const habitsCollection = collection(db, 'habits');
+      const habitSnapshot = await getDocs(habitsCollection);
+      const habitList = habitSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setHabits(habitList);
+    } catch (e) {
+      console.error('Error fetching habits: ', e);
+    }
+  };
+
+  const addHabit = async (habit) => {
+    try {
+      const docRef = await addDoc(collection(db, 'habits'), habit);
+      setHabits(prevHabits => [...prevHabits, { id: docRef.id, ...habit }]);
+    } catch (e) {
+      console.error('Error adding habit: ', e);
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, isAuthed, habits, login, register, logout, forgotPassword, fetchUser, addHabit }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-    const value = useContext(AuthContext);
+  const value = useContext(AuthContext);
 
-    if (!value) {
-        throw new Error('useAuth must be wrapped inside AuthContextProvider');
-    }
+  if (!value) {
+    throw new Error('useAuth must be wrapped inside AuthContextProvider');
+  }
 
-    return value;
+  return value;
 };

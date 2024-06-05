@@ -2,19 +2,24 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import styles from '@/constants/Styles';
 import TextComponent from '../components/TextComponent';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
+import { useDatabase } from '@/context/databaseContex';
 
 const NewHabitScreen = () => {
   const [habitName, setHabitName] = useState('');
   const [habitDescription, setHabitDescription] = useState('');
   const [habitTime, setHabitTime] = useState('');
-  const router = useRouter();
-
-  const handleSave = () => {
-    // Logic to save the new habit
-    // Navigate back to the home screen or show a success message
-    router.push('/home');
-  };
+    const { addHabit } = useDatabase();
+    
+    const handleSave = async () => {
+        await addHabit({
+            name: habitName,
+            description: habitDescription,
+            time: habitTime,
+            createdAt: new Date(),
+        });
+        router.back();
+    };
 
   return (
     <View style={styles.container}>

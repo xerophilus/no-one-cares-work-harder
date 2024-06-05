@@ -6,10 +6,12 @@ import styles from '@/constants/Styles';
 import TextComponent from '@/components/TextComponent';
 import { Button, Icon } from 'react-native-paper';
 import { router } from 'expo-router';
+import { useDatabase } from '@/context/databaseContex';
 
 const HomeScreen = () => {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
+  const { habits } = useDatabase();
 
   useEffect(() => {
     axios({
@@ -42,10 +44,12 @@ const HomeScreen = () => {
           <TextComponent style={styles.cardContent}>- {author}</TextComponent>
         </View>
         <View style={styles.progressContainer}>
-          <TextComponent style={styles.progressTitle}>Today's Progress</TextComponent>
-          <TextComponent style={styles.progressContent}>Habits Completed: 3/5</TextComponent>
-          <TextComponent style={styles.progressContent}>Streak: 10 days</TextComponent>
-          <TextComponent style={styles.progressContent}>Achievements: 5</TextComponent>
+          {habits.map((habit) => (
+            <View key={habit.id} style={styles.habitItem}>
+              <TextComponent style={styles.habitText}>{habit.name}</TextComponent>
+              <TextComponent style={styles.habitTime}>{habit.time}</TextComponent>
+            </View>
+          ))}
         </View>
         <View style={styles.habitsContainer}>
           <TextComponent style={styles.sectionTitle}>Upcoming Habits</TextComponent>

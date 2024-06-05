@@ -1,3 +1,4 @@
+import { useAuth } from '@/context/authContext';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
@@ -7,6 +8,9 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState('john.doe@example.com');
   const [goal, setGoal] = useState('Lose 5 kg in 2 months');
   const [editable, setEditable] = useState(false);
+
+  const { logout } = useAuth();
+
   const handleSave = () => {
     console.log("save")
     setEditable(false)
@@ -91,6 +95,9 @@ const ProfileScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.settingItem}>
           <Text style={styles.settingText}>Notifications</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.settingItem} onPress={() => logout()}>
+          <Text style={styles.settingText}>Logout</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

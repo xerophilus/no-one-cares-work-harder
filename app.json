@@ -22,7 +22,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.riseandendure.app",
-      "googleServicesFile": "./google-servies.json"
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
