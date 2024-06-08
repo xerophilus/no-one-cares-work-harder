@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/authContext';
+import { useFirebase } from '@/context/firebaseContext';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
@@ -9,7 +9,7 @@ const ProfileScreen = () => {
   const [goal, setGoal] = useState('Lose 5 kg in 2 months');
   const [editable, setEditable] = useState(false);
 
-  const { logout } = useAuth();
+  const { logout } = useFirebase();
 
   const handleSave = () => {
     console.log("save")

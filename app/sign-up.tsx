@@ -1,13 +1,13 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useAuth } from "@/context/authContext";
+import { useFirebase } from "@/context/firebaseContext";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { Alert, ImageBackground, StyleSheet, TouchableOpacity } from "react-native";
 import { ActivityIndicator, Button, TextInput } from "react-native-paper";
 
 const SignUp = () => {
-    const { register } = useAuth();
+    const { register } = useFirebase();
     
     const [loading, setLoading] = useState(false);
     const [visible, setVisibility] = useState(false);

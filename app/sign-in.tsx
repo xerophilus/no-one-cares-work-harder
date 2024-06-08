@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useAuth } from "@/context/authContext";
+import { useFirebase } from "@/context/firebaseContext";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { Alert, ActivityIndicator, StyleSheet } from "react-native";
@@ -8,7 +8,7 @@ import { TextInput } from "react-native-paper";
 import { TouchableOpacity, ImageBackground } from 'react-native';
 
 const Login = () => {
-    const { login } = useAuth();
+    const { login } = useFirebase();
     
     const [loading, setLoading] = useState(false);
     const [visible, setVisibility] = useState(false);

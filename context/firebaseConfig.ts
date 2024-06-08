@@ -22,9 +22,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = initializeAuth(app, {
-    persistence: Platform.OS == 'web' ? browserSessionPersistence :getReactNativePersistence(AsyncStorage)
+    persistence: Platform.OS == 'web' ? browserSessionPersistence : getReactNativePersistence(AsyncStorage)
 })
 
 export const db = getFirestore(app);
-
-export const usersRef = collection(db, 'users');

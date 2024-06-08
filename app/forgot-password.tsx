@@ -1,11 +1,11 @@
-import { useAuth } from '@/context/authContext';
+import { useFirebase } from '@/context/firebaseContext';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Alert } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
 const ForgotPasswordScreen = () => {
-    const { forgotPassword } = useAuth();
+    const { forgotPassword } = useFirebase();
     const [loading, setLoading] = useState(false);
     const emailRef = useRef('');
 
